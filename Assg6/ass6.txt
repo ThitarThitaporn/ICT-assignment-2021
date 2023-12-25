@@ -1,0 +1,48 @@
+#include <Wire.h>
+#define SLAVE 2
+char hello[7] = "HELLO1";
+void setup()
+{
+    Serial.begin(9600);
+    Wire.begin();
+}
+void loop()
+{
+    // สลับ SLAVE
+    Wire.beginTransmission(SLAVE);
+    Wire.write(hello);
+    Wire.endTransmission();
+    Wire.requestFrom(SLAVE, 6);
+    for (int i = 0; Wire.available(); i++)
+    {
+        hello[i] = Wire.read();
+    }
+    delay(500);
+}
+
+----------------
+#include <Wire.h>
+#define SLAVE 2
+char hello[7] = "HELLO1";
+void setup()
+{
+    Serial.begin(9600);
+    Wire.begin(SLAVE);
+    Wire.onReceive(getDataEvent);
+    Wire.onRequest(sentDataEvent);
+}
+void loop()
+{
+}
+void getDataEvent(int nBytes)
+{
+    for (int i = 0; i < nBytes; i++)
+    {
+        hello[i] = Wire.read();
+    }
+    // + 1
+}
+void sentDataEvent()
+{
+    Wire.write(hello);
+}

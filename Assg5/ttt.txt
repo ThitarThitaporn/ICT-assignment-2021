@@ -1,0 +1,97 @@
+#define LED_S_R 5
+#define LED_S_Y 6
+#define LED_S_G 7
+#define BT_S 2 
+
+#define LED_W_R 8
+#define LED_W_Y 9
+#define LED_W_G 10
+#define BT_W 3
+
+#define LED_P_R 11
+#define LED_P_G 12
+#define BT_P 4
+
+#define goW 0 // W ไป
+#define waitW 1 //ฝั่ง w รอ
+#define goS 2  // S ไป
+#define waitS 3 //ฝั่ง s รอ
+#define goP  4   //Led Green
+#define blink1S 5   //Led Red
+#define blink2G 6   //Led Green
+#define blink3S 7   //Led Red
+#define blink4G 8   //Led Green
+#define blink5S 9   //Led Red
+
+
+struct State
+{
+    unsigned long ST_Out;   //6-bit pattern to street output
+    unsigned long Time;    //delay in ms units
+    unsigned long Next[10];}; // next state for inputs 0,1,2,3
+
+typedef const struct State SType;
+  
+SType FSM[10] = {
+  //  p  s  w
+  {B10100001, 2000, {goW, goW, waitW, waitW,waitW,waitW,waitW,waitW}}, 
+  {B10100010, 300,	{goS, goS, goS, goS, goP, goP, goS, goS}}, 
+  {B10001100, 2000,	{goS, waitS, goS, waitS, waitS, waitS, waitS, waitS}},
+  {B10010100, 300,	{goW, goW, goW, goW, goP, goP, goP, goP}},
+  {B01100100, 2000,	{goP, blink1S, blink1S, blink1S, goP, blink1S, blink1S, blink1S}},
+      
+  {B00100100, 300,	{blink2G, blink2G, blink2G, blink2G, blink2G, blink2G, blink2G, blink2G}},
+  {B01100100, 200,	{blink3S, blink3S, blink3S, blink3S, blink3S, blink3S, blink3S, blink3S}},
+  {B00100100, 200,	{blink4G, blink4G, blink4G, blink4G, blink4G, blink4G, blink4G, blink4G}},
+  {B01100100, 200,	{blink5S, blink5S, blink5S, blink5S, blink5S, blink5S, blink5S, blink5S}},
+  {B00100100, 200,	{goW, goW, goS, goW, goP, goW, goS, goW}},
+  
+
+};
+
+unsigned long S = 0; // index to the current state
+
+void setup()
+{
+    pinMode(LED_W_R, OUTPUT);
+    pinMode(LED_W_Y, OUTPUT);
+    pinMode(LED_W_G, OUTPUT);
+    pinMode(BT_W, INPUT);
+  
+    pinMode(LED_S_R, OUTPUT);
+    pinMode(LED_S_Y, OUTPUT);
+    pinMode(LED_S_G, OUTPUT);
+    pinMode(BT_S, INPUT);
+  
+    pinMode(LED_P_R, OUTPUT);
+    pinMode(LED_P_G, OUTPUT);
+    pinMode(BT_P, INPUT);
+}
+
+int input, input1, input2, input3;
+
+void loop()
+{ 	
+  	digitalWrite(LED_P_R, FSM[S].ST_Out & B10000000); 
+    digitalWrite(LED_P_G, FSM[S].ST_Out & B01000000);
+
+  	digitalWrite(LED_S_R, FSM[S].ST_Out & B00100000);
+    digitalWrite(LED_S_Y, FSM[S].ST_Out & B00010000);
+    digitalWrite(LED_S_G, FSM[S].ST_Out & B00001000);
+  
+    digitalWrite(LED_W_R, FSM[S].ST_Out & B00000100);
+    digitalWrite(LED_W_Y, FSM[S].ST_Out & B00000010);
+    digitalWrite(LED_W_G, FSM[S].ST_Out & B00000001);
+  
+    
+    
+    delay(FSM[S].Time);
+  
+    input1 = digitalRead(BT_W);
+    input2 = digitalRead(BT_S);
+    input3 = digitalRead(BT_P);
+  
+    input = input3 * 4 + input2 * 2 + input1 ;
+  
+    S = FSM[S].Next[input];
+}

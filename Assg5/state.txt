@@ -1,0 +1,27 @@
+     3    2     1
+     p    S     W
+    r g g y r g y r
+  {B1 0 0 0 1 1 0 0, 2000,{goW, goW, waitW, waitW, waitW, waitW, waitW, waitW}},          //1         
+  {B10001010, 300, {goS, goS, goS, goS, goP, goP, goS, goS}},                      //2       
+  {B10100001, 2000,{goS, waitS, goS, waitS, waitS, waitS, waitS, waitS}},          //3       
+  {B10010001, 300, {goW, goW, goW, goW, goP, goP, goP, goP}},                      //4       
+  {B00001001, 200, {bP2, bP2, bP2, bP2, bP2, bP2, bP2, bP2}},                      //5 
+  {B01001001, 2000,{goP, bP1, bP1, bP1, goP, bP1, bP1, bP1}},                      //6
+  {B01001001, 200, {bP3, bP3, bP3, bP3, bP3, bP3, bP3, bP3}},                      //7
+  {B00001001, 200, {bP4, bP4, bP4, bP4, bP4, bP4, bP4, bP4}},                      //8
+  {B01001001, 200, {bP5, bP5, bP5, bP5, bP5, bP5, bP5, bP5}},                      //9
+  {B00001001, 200, {goW, goW, goS, goW, goP, goW, goS, goW}},                      //10
+};
+
+  
+	digitalWrite(LED_P_G, FSM[S].ST_Out & B01000000); 2 green
+	digitalWrite(LED_P_R, FSM[S].ST_Out & B10000000); 1 red
+  
+	digitalWrite(LED_S_R, FSM[S].ST_Out & B00001000); 5 red
+ 	digitalWrite(LED_S_Y, FSM[S].ST_Out & B00010000); 4 yellow
+ 	digitalWrite(LED_S_G, FSM[S].ST_Out & B00100000); 3 green
+  
+ 	digitalWrite(LED_W_R, FSM[S].ST_Out & B00000001); 8 red
+ 	digitalWrite(LED_W_Y, FSM[S].ST_Out & B00000010); 7 yellow
+  	digitalWrite(LED_W_G, FSM[S].ST_Out & B00000100); 6 green
+  

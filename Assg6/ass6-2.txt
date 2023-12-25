@@ -1,0 +1,112 @@
+-------1
+//-------------------Master---------------------------
+#include <Wire.h>
+int i=1 ;
+int slaveAddress2 = 9;
+int slaveAddress3 = 10;
+char message[7]="HELLO1";
+int bytes;
+
+void setup() 
+{
+  Wire.begin();
+  Serial.begin(9600);
+}
+
+void loop()
+{
+  //1 sent to 2
+    Wire.beginTransmission(slaveAddress2);
+    Wire.write(message);
+    Serial.println(message);
+    Wire.endTransmission();
+  
+  //1 recieve from 2
+    bytes = Wire.requestFrom(slaveAddress2,6);
+    for(int i=0 ; i<bytes ;i++)
+    {
+        message[i]=Wire.read();
+    }
+    delay(500);
+  
+  //1 sent to 3
+    Wire.beginTransmission(slaveAddress3);
+    Wire.write(message);
+    Serial.println(message);
+    Wire.endTransmission();
+  
+  //1 recieve from 3
+    bytes = Wire.requestFrom(slaveAddress3,6);
+    for(int i=0 ; i<bytes ;i++)
+    {
+        message[i]=Wire.read();
+    }
+    delay(500);
+}
+
+
+-----------------------2
+//--------------Slave2------------------
+#include<Wire.h>
+char message[7];
+
+void setup()
+{
+  Wire.begin(9);
+  Wire.onRequest(requestEvent);
+  Wire.onReceive(receiveEvent);
+  Serial.begin(9600); 
+}
+ 
+void loop()
+{
+  delay(500);
+}
+
+void receiveEvent(int bytes)
+{
+  for(int i=0;i<bytes;i++)
+  {
+    message[i]=Wire.read();
+  }
+   message[5]++;
+  if(message[5]>'9'){message[5]='1';}
+}
+
+void requestEvent()
+{
+  Wire.write(message);
+  Serial.println(message);
+}  
+------------------
+//----------------Slave3------------
+#include<Wire.h>
+char message[7];
+void setup()
+{
+  Wire.begin(10);
+  Wire.onRequest(requestEvent);
+  Wire.onReceive(receiveEvent);
+  Serial.begin(9600); 
+}
+ 
+void loop()
+{
+  delay(500);
+}
+
+void receiveEvent(int bytes)
+{
+  for(int i=0;i<bytes;i++)
+  {
+    message[i]=Wire.read();
+  }
+   message[5]++;
+  if(message[5]>'9'){message[5]='1';}
+}
+
+void requestEvent()
+{
+  Wire.write(message);
+  Serial.println(message);
+}  
